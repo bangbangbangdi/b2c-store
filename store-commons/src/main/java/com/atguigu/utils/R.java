@@ -1,6 +1,8 @@
 package com.atguigu.utils;
 
-import com.alibaba.druid.util.StringUtils;
+//import com.alibaba.druid.util.StringUtils;
+
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
