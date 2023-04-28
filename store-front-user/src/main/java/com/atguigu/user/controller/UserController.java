@@ -19,7 +19,7 @@ public class UserController {
         boolean b = result.hasErrors();
 
         if (b){
-            //return R.fail("账号为null,不可使用!");
+            return R.fail("账号为null,不可使用!");
         }
         return null;
 
