@@ -6,7 +6,6 @@ import com.atguigu.pojo.User;
 import com.atguigu.utils.R;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface UserService {
     R check(UserCheckParam userCheckParam);
 
