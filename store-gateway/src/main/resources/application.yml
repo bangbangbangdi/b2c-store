@@ -11,3 +11,15 @@ spring:
           uri: lb://product-service #使用负载均衡,调用服务名,这是服务名
           predicates:
             - Path=/product/** # 访问product相关,转发到product服务
+        - id: static-service # 此名称随意定义
+          uri: lb://static-service #使用负载均衡,调用服务名,这是服务名
+          predicates:
+            - Path=/public/** # 访问product相关,转发到product服务
+        - id: carousel-service # 轮播图服务
+          uri: lb://carousel-service #使用负载均衡,调用服务名,这是服务名
+          predicates:
+            - Path=/carousel/** # 访问product相关,转发到product服务
+        - id: category-service # 类别服务
+          uri: lb://category-service #使用负载均衡,调用服务名,这是服务名
+          predicates:
+            - Path=/category/** # 访问类别相关,转发到类别服务
