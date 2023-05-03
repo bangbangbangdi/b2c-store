@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Bean;
  * @date: 2023/4/29 21:43
  * @version: 1.0
  */
-@MapperScan(basePackages = "com.atguigu.category")
+@MapperScan(basePackages = "com.atguigu.category.mapper")
 @SpringBootApplication
 public class CategoryApplication {
 
