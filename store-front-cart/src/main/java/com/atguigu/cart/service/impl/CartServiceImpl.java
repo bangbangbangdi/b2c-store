@@ -175,4 +175,15 @@ public class CartServiceImpl implements CartService {
         log.info("CartServiceImpl.remove, cart= {}, result:{}",cart,rows);
         return R.ok("购物车删除成功");
     }
+
+    /**
+     * 清空对应id的购物车项
+     *
+     * @param cartIds
+     */
+    @Override
+    public void clearIds(List<Integer> cartIds) {
+        cartMapper.deleteBatchIds(cartIds);
+        log.info("CartServiceImpl.clearIds, cartIds= {}, result:{}",cartIds,cartIds);
+    }
 }

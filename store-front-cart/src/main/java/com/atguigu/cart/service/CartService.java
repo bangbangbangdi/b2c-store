@@ -4,6 +4,8 @@ import com.atguigu.param.CartSaveParam;
 import com.atguigu.pojo.Cart;
 import com.atguigu.utils.R;
 
+import java.util.List;
+
 /**
  * @projectName: b2c-store
  * @package: com.atguigu.cart.service
@@ -41,4 +43,10 @@ public interface CartService {
      * @return
      */
     R remove(Cart cart);
+
+    /**
+     * 清空对应id的购物车项
+     * @param cartIds
+     */
+    void clearIds(List<Integer> cartIds);
 }

@@ -18,13 +18,13 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import java.time.Duration;
 
 /**
- * @projectName: b2c-store
- * @package: com.atguigu.config
- * @className: CacheConfiguration
- * @author: BangDi
- * @description: TODO
- * @date: 2023/5/1 21:37
- * @version: 1.0
+ * projectName: b2c-store
+ * package: com.atguigu.config
+ * className: CacheConfiguration
+ * author: BangDi
+ * description: TODO
+ * date: 2023/5/1 21:37
+ * version: 1.0
  */
 public class CacheConfiguration {
     //配置缓存manager

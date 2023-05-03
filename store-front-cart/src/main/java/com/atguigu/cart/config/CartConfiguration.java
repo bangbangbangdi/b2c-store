@@ -1,22 +1,21 @@
-package com.atguigu.product.config;
+package com.atguigu.cart.config;
 
-import com.atguigu.config.CacheConfiguration;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @projectName: b2c-store
- * @package: com.atguigu.product.config
- * @className: ProductConfiguration
- * @author: BangDi
- * @description: TODO
- * @date: 2023/5/1 21:43
- * @version: 1.0
+ * projectName:    b2c-store
+ * package:        com.atguigu.cart.config
+ * className:      CartConfiguration
+ * author:     BangDi
+ * description:  TODO
+ * date:    2023/5/3 15:47
+ * version:    1.0
  */
 @Configuration
-public class ProductConfiguration extends CacheConfiguration {
+public class CartConfiguration {
 
     /**
      * mq序列化方式，选择json！

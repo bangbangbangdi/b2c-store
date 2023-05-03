@@ -11,10 +11,12 @@ import com.atguigu.pojo.Product;
 import com.atguigu.product.mapper.PictureMapper;
 import com.atguigu.product.mapper.ProductMapper;
 import com.atguigu.product.service.ProductService;
+import com.atguigu.to.OrderToProduct;
 import com.atguigu.utils.R;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,6 +24,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @projectName: b2c-store
@@ -34,7 +39,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class ProductServiceImpl implements ProductService {
+public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> implements ProductService {
 
     @Autowired
     private CategoryClient categoryClient;
@@ -210,14 +215,14 @@ public class ProductServiceImpl implements ProductService {
      * @param productIds
      * @return
      */
-    @Cacheable(value = "list.product",key = "#productIds")
+    @Cacheable(value = "list.product", key = "#productIds")
     @Override
     public R ids(List<Integer> productIds) {
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("product_id",productIds);
+        queryWrapper.in("product_id", productIds);
         List<Product> products = productMapper.selectList(queryWrapper);
         R ok = R.ok("类别信息查询成功", products);
-        log.info("ProductServiceImpl.ids, productIds= {}, result:{}",productIds,ok);
+        log.info("ProductServiceImpl.ids, productIds= {}, result:{}", productIds, ok);
         return ok;
     }
 
@@ -230,9 +235,33 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> cartList(List<Integer> productIds) {
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("product_id",productIds);
+        queryWrapper.in("product_id", productIds);
         List<Product> products = productMapper.selectList(queryWrapper);
-        log.info("ProductServiceImpl.cartList, productIds= {}, result:{}",productIds,products);
+        log.info("ProductServiceImpl.cartList, productIds= {}, result:{}", productIds, products);
         return products;
+    }
+
+    /**
+     * 修改库存和增加销售量
+     *
+     * @param orderToProducts
+     */
+    @Override
+    public void subNumber(List<OrderToProduct> orderToProducts) {
+        // 将集合转为map productId orderToProduct
+        Map<Integer, OrderToProduct> map = orderToProducts.stream().collect(Collectors.toMap(OrderToProduct::getProductId, v -> v));
+        // 获取商品的id集合
+        Set<Integer> productIds = map.keySet();
+        // 查询集合对应的商品信息
+        List<Product> products = productMapper.selectBatchIds(productIds);
+        // 修改商品信息
+        for (Product product : products) {
+            Integer num = map.get(product.getProductId()).getNum();
+            product.setProductNum(product.getProductNum() - num); // 减库存
+            product.setProductSales(product.getProductSales() + num); // 添加销售量
+        }
+        // 批量更新
+        updateBatchById(products);
+        log.info("ProductServiceImpl.subNumber, orderToProducts= {}, result:{}",orderToProducts,"库存和销售量修改完毕");
     }
 }

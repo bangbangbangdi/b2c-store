@@ -35,3 +35,7 @@ spring:
           uri: lb://cart-service #使用负载均衡,调用服务名,这是服务名
           predicates:
             - Path=/cart/** # 访问类别相关,转发到类别服务
+        - id: order-service
+          uri: lb://order-service #使用负载均衡,调用服务名,这是服务名
+          predicates:
+            - Path=/order/** # 访问类别相关,转发到类别服务

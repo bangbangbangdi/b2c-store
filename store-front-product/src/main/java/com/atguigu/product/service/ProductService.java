@@ -4,7 +4,9 @@ import com.atguigu.param.ProductHotParam;
 import com.atguigu.param.ProductIdsParam;
 import com.atguigu.param.ProductSearchParam;
 import com.atguigu.pojo.Product;
+import com.atguigu.to.OrderToProduct;
 import com.atguigu.utils.R;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
@@ -17,7 +19,7 @@ import java.util.List;
  * @date: 2023/4/30 00:06
  * @version: 1.0
  */
-public interface ProductService {
+public interface ProductService extends IService<Product> {
     /**
      * 根据单类别名称，查询热门商品，至多7条数据
      * @param categoryName 类别名称
@@ -87,4 +89,10 @@ public interface ProductService {
      * @return
      */
     List<Product> cartList(List<Integer> productIds);
+
+    /**
+     * 修改库存和增加销售量
+     * @param orderToProducts
+     */
+    void subNumber(List<OrderToProduct> orderToProducts);
 }
