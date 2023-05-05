@@ -1,9 +1,9 @@
 package com.atguigu.product.service.impl;
 
-import com.atguigu.clients.CategoryClient;
-import com.atguigu.clients.SearchClient;
+import com.atguigu.clients.*;
 import com.atguigu.param.ProductHotParam;
 import com.atguigu.param.ProductIdsParam;
+import com.atguigu.param.ProductSaveParam;
 import com.atguigu.param.ProductSearchParam;
 import com.atguigu.pojo.Category;
 import com.atguigu.pojo.Picture;
@@ -18,14 +18,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> implements ProductService {
+public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> implements ProductService {
 
     @Autowired
     private CategoryClient categoryClient;
@@ -49,6 +50,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
     private PictureMapper pictureMapper;
     @Autowired
     private SearchClient searchClient;
+    @Autowired
+    private OrderClient orderClient;
+    @Autowired
+    private CartClient cartClient;
+    @Autowired
+    private CollectClient collectClient;
 
 
     /**
@@ -262,6 +269,108 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
         }
         // 批量更新
         updateBatchById(products);
-        log.info("ProductServiceImpl.subNumber, orderToProducts= {}, result:{}",orderToProducts,"库存和销售量修改完毕");
+        log.info("ProductServiceImpl.subNumber, orderToProducts= {}, result:{}", orderToProducts, "库存和销售量修改完毕");
+    }
+
+    /**
+     * 类别对应的商品数量查询
+     *
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public Long adminCount(Integer categoryId) {
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("category_id", categoryId);
+        Long cnt = productMapper.selectCount(queryWrapper);
+        log.info("ProductServiceImpl.adminCount, categoryId= {}, result:{}", categoryId, cnt);
+        return cnt;
+    }
+
+    /**
+     * 商品保存业务
+     *
+     * @param productSaveParam
+     * @return
+     */
+    @CacheEvict(value = "list.product", allEntries = true)
+    @Override
+    public R adminSave(ProductSaveParam productSaveParam) {
+        // 1.商品数据保存
+        Product product = new Product();
+        BeanUtils.copyProperties(productSaveParam, product);
+        int rows = productMapper.insert(product);
+        log.info("ProductServiceImpl.adminSave, productSaveParam= {}, result:{}", productSaveParam, rows);
+
+        // 2.商品图片数据保存
+        String pictures = productSaveParam.getPictures();
+        if (!StringUtils.isEmpty(pictures)) {
+            String[] urls = pictures.split("\\+");
+            for (String url : urls) {
+                Picture picture = new Picture();
+                picture.setProductId(product.getProductId());
+                picture.setProductPicture(url);
+                pictureMapper.insert(picture); // 插入商品的图片
+            }
+        }
+        // 3.搜索数据库的数据添加
+        searchClient.saveOrUpdate(product);
+
+        return R.ok("商品数据添加成功");
+    }
+
+    /**
+     * 商品数据更新
+     * 1.更新商品数据
+     * 2.同步搜索服务
+     *
+     * @param product
+     * @return
+     */
+    @Override
+    public R adminUpdate(Product product) {
+        productMapper.updateById(product);
+        searchClient.saveOrUpdate(product);
+        return R.ok("商品数据更新成功");
+    }
+
+    /**
+     * 商品删除业务
+     *
+     * @param productId
+     * @return
+     */
+
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "product.list", allEntries = true),
+                    @CacheEvict(value = "product", key = "#productId")
+            }
+    )
+    @Override
+    public R adminRemove(Integer productId) {
+        //1.检查购物车
+        R r = cartClient.check(productId);
+        if ("004".equals(r.getCode())) {
+            log.info("ProductServiceImpl.adminRemove, productId= {}, result:{}", productId, r);
+            return r;
+        }
+        //2.检查订单
+        r = orderClient.check(productId);
+        if ("004".equals(r.getCode())) {
+            log.info("ProductServiceImpl.adminRemove, productId= {}, result:{}", productId, r);
+            return r;
+        }
+        //3.删除商品
+        productMapper.deleteById(productId);
+        //4.删除商品相关的图片
+        QueryWrapper<Picture> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_id", productId);
+        int rows = pictureMapper.delete(queryWrapper);
+        //5.删除收藏
+        collectClient.remove(productId);
+        //6.进行es数据同步
+        searchClient.remove(productId);
+        return R.ok("商品删除成功");
     }
 }

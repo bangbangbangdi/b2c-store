@@ -3,6 +3,7 @@ package com.atguigu.clients;
 import com.atguigu.param.ProductCollectParam;
 import com.atguigu.param.ProductIdParam;
 import com.atguigu.param.ProductIdsParam;
+import com.atguigu.param.ProductSaveParam;
 import com.atguigu.pojo.Product;
 import com.atguigu.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -40,4 +41,15 @@ public interface ProductClient {
     @PostMapping("/product/cart/list")
     List<Product> cartList(@RequestBody ProductCollectParam productCollectParam);
 
+    @PostMapping("/product/admin/count")
+    Long adminCount(@RequestBody Integer categoryId);
+
+    @PostMapping("/product/admin/save")
+    R adminSave(@RequestBody ProductSaveParam productSaveParam);
+
+    @PostMapping("/product/admin/update")
+    R adminUpdate(@RequestBody Product product);
+
+    @PostMapping("/product/admin/remove")
+    R adminRemove(@RequestBody Integer productId);
 }

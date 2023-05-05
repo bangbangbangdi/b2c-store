@@ -39,3 +39,7 @@ spring:
           uri: lb://order-service #使用负载均衡,调用服务名,这是服务名
           predicates:
             - Path=/order/** # 访问类别相关,转发到类别服务
+        - id: admin-service
+          uri: lb://admin-service #使用负载均衡,调用服务名,这是服务名
+          predicates:
+            - Path=/admin/** # 访问类别相关,转发到类别服务

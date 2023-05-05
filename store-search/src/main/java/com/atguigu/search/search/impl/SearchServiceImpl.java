@@ -1,5 +1,6 @@
 package com.atguigu.search.search.impl;
 
+import com.atguigu.doc.ProductDoc;
 import com.atguigu.param.ProductSearchParam;
 import com.atguigu.pojo.Product;
 import com.atguigu.search.search.SearchService;
@@ -8,10 +9,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -92,5 +96,35 @@ public class SearchServiceImpl implements SearchService {
         R r = R.ok(null, products, total);
         log.info("SearchServiceImpl.search, productSearchParam= {}, result:{}",productSearchParam,r);
         return r;
+    }
+
+    /**
+     * 商品同步:插入和更新
+     *
+     * @param product
+     * @return
+     */
+    @Override
+    public R save(Product product) throws IOException {
+        IndexRequest indexRequest = new IndexRequest("product").id(product.getProductId().toString());
+        ProductDoc productDoc = new ProductDoc(product);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(productDoc);
+        indexRequest.source(json, XContentType.JSON);
+        restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
+        return R.ok("数据同步成功");
+    }
+
+    /**
+     * 进行es库的商品删除
+     *
+     * @param productId
+     * @return
+     */
+    @Override
+    public R remove(Integer productId) throws IOException {
+        DeleteRequest request = new DeleteRequest("product").id(productId.toString());
+        restHighLevelClient.delete(request,RequestOptions.DEFAULT);
+        return R.ok("es库数据删除成功");
     }
 }

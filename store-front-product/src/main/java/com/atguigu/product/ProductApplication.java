@@ -1,7 +1,6 @@
 package com.atguigu.product;
 
-import com.atguigu.clients.CategoryClient;
-import com.atguigu.clients.SearchClient;
+import com.atguigu.clients.*;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
@@ -24,7 +23,7 @@ import org.springframework.context.annotation.Bean;
  */
 @MapperScan(basePackages = "com.atguigu.product.mapper")
 @SpringBootApplication
-@EnableFeignClients(clients = {CategoryClient.class, SearchClient.class})
+@EnableFeignClients(clients = {CategoryClient.class, SearchClient.class, OrderClient.class, CartClient.class, CollectClient.class})
 @EnableCaching
 public class ProductApplication {
 

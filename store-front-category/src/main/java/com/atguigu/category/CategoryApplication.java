@@ -1,25 +1,29 @@
 package com.atguigu.category;
 
 
+import com.atguigu.clients.CategoryClient;
+import com.atguigu.clients.ProductClient;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
 /**
- * @projectName: b2c-store
- * @package: com.atguigu.category
- * @className: CategoryApplication
- * @author: BangDi
- * @description: TODO
- * @date: 2023/4/29 21:43
- * @version: 1.0
+ * projectName: b2c-store
+ * package: com.atguigu.category
+ * className: CategoryApplication
+ * author: BangDi
+ * description: TODO
+ * date: 2023/4/29 21:43
+ * version: 1.0
  */
 @MapperScan(basePackages = "com.atguigu.category.mapper")
 @SpringBootApplication
+@EnableFeignClients(clients = {ProductClient.class})
 public class CategoryApplication {
 
     public static void main(String[] args) {

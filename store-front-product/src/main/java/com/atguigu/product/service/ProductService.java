@@ -2,6 +2,7 @@ package com.atguigu.product.service;
 
 import com.atguigu.param.ProductHotParam;
 import com.atguigu.param.ProductIdsParam;
+import com.atguigu.param.ProductSaveParam;
 import com.atguigu.param.ProductSearchParam;
 import com.atguigu.pojo.Product;
 import com.atguigu.to.OrderToProduct;
@@ -95,4 +96,32 @@ public interface ProductService extends IService<Product> {
      * @param orderToProducts
      */
     void subNumber(List<OrderToProduct> orderToProducts);
+
+    /**
+     * 类别对应的商品数量查询
+     * @param categoryId
+     * @return
+     */
+    Long adminCount(Integer categoryId);
+
+    /**
+     * 商品保存业务
+     * @param productSaveParam
+     * @return
+     */
+    R adminSave(ProductSaveParam productSaveParam);
+
+    /**
+     * 商品数据更新
+     * @param product
+     * @return
+     */
+    R adminUpdate(Product product);
+
+    /**
+     * 商品删除业务
+     * @param productId
+     * @return
+     */
+    R adminRemove(Integer productId);
 }

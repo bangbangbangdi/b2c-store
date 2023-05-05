@@ -4,11 +4,13 @@ import com.atguigu.clients.ProductClient;
 import com.atguigu.order.mapper.OrderMapper;
 import com.atguigu.order.service.OrderService;
 import com.atguigu.param.OrderParam;
+import com.atguigu.param.PageParam;
 import com.atguigu.param.ProductCollectParam;
 import com.atguigu.pojo.Order;
 import com.atguigu.pojo.Product;
 import com.atguigu.to.OrderToProduct;
 import com.atguigu.utils.R;
+import com.atguigu.vo.AdminOrderVo;
 import com.atguigu.vo.CartVo;
 import com.atguigu.vo.OrderVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -44,6 +46,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     /**
      * 进行订单数据保存业务
@@ -138,5 +143,37 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         R ok = R.ok("订单数据获取成功!", result);
         log.info("OrderServiceImpl.list, userId= {}, result:{}",userId,ok);
         return ok;
+    }
+
+    /**
+     * 检查订单中是否有商品引用
+     *
+     * @param productId
+     * @return
+     */
+    @Override
+    public R check(Integer productId) {
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_id",productId);
+        Long count = baseMapper.selectCount(queryWrapper);
+        if (count > 0){
+            return R.fail("有:"+count+"件订单项引用,删除失败");
+        }
+        return R.ok("无订单引用,可以删除");
+    }
+
+    /**
+     * 后台管理查询订单数据
+     *
+     * @param pageParam
+     * @return
+     */
+    @Override
+    public R adminList(PageParam pageParam) {
+        // 分页参数
+        int offset = (pageParam.getCurrentPage() - 1)*pageParam.getPageSize();
+        int pageSize = pageParam.getPageSize();
+        List<AdminOrderVo> adminOrderVos = orderMapper.selectAdminOrder(offset,pageSize);
+        return R.ok("订单数据查询成功!",adminOrderVos);
     }
 }

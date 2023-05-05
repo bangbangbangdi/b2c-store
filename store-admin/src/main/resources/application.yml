@@ -52,7 +52,7 @@ aliyun:
   oss:
     file:
       # 控制台 - oss - 点击对应桶 - 概览 - 地域节点
-      endpoint: oss-cn-beijing.aliyuncs.com
-      keyid: LTAI5t82cN3TfofxJywKvoj5
-      keysecret: 7cPhJQBMNewuqXXnUiEjpj1l8YeONo
-      bucketname: store-b2c
+      endpoint: oss-ap-northeast-1.aliyuncs.com
+      keyid: LTAI5tSouoPEoNMC44tSCY6t
+      keysecret: wBh8r8bqoPuWUFHya4vFdi7LmWQWwv
+      bucketname: bangdi

@@ -1,6 +1,8 @@
 package com.atguigu.category.service;
 
+import com.atguigu.param.PageParam;
 import com.atguigu.param.ProductHotParam;
+import com.atguigu.pojo.Category;
 import com.atguigu.utils.R;
 
 public interface CategoryService {
@@ -24,4 +26,32 @@ public interface CategoryService {
      * @return
      */
     R list();
+
+    /**
+     * 分页查询
+     * @param pageParam
+     * @return
+     */
+    R listPage(PageParam pageParam);
+
+    /**
+     * 添加类别信息
+     * @param category
+     * @return
+     */
+    R adminSave(Category category);
+
+    /**
+     * 删除数据
+     * @param categoryId
+     * @return
+     */
+    R adminRemove(Integer categoryId);
+
+    /**
+     * 类别修改功能
+     * @param category
+     * @return
+     */
+    R adminUpdate(Category category);
 }

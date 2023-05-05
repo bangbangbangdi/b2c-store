@@ -3,14 +3,12 @@ package com.atguigu.order.controller;
 import com.atguigu.order.service.OrderService;
 import com.atguigu.param.CartListParam;
 import com.atguigu.param.OrderParam;
+import com.atguigu.param.PageParam;
 import com.atguigu.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * projectName:    b2c-store
@@ -23,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("order")
-public class OderController {
+public class OrderController {
 
     @Autowired
     private OrderService orderService;
@@ -39,6 +37,16 @@ public class OderController {
             return R.fail("参数异常,查询失败");
         }
         return orderService.list(cartListParam.getUserId());
+    }
+
+    @PostMapping("remove/check")
+    public R check(@RequestBody Integer productId){
+        return orderService.check(productId);
+    }
+
+    @PostMapping("admin/list")
+    public R adminList(@RequestBody PageParam pageParam){
+        return orderService.adminList(pageParam);
     }
 
 }

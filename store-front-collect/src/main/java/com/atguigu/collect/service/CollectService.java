@@ -34,4 +34,11 @@ public interface CollectService {
      * @return
      */
     R remove(Collect collect);
+
+    /**
+     * 根据商品Id进行删除
+     * @param productId
+     * @return
+     */
+    R removeByPid(Integer productId);
 }

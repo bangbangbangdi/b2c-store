@@ -1,6 +1,8 @@
 package com.atguigu.clients;
 
+import com.atguigu.param.PageParam;
 import com.atguigu.param.ProductHotParam;
+import com.atguigu.pojo.Category;
 import com.atguigu.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,4 +31,15 @@ public interface CategoryClient {
     @GetMapping("/category/list")
     R list();
 
+    @PostMapping("/category/admin/list")
+    R adminPageList(@RequestBody PageParam pageParam);
+
+    @PostMapping("/category/admin/save")
+    R adminSave(@RequestBody Category category);
+
+    @PostMapping("/category/admin/remove")
+    R adminRemove(@RequestBody Integer categoryId);
+
+    @PostMapping("/category/admin/update")
+    R adminUpdate(@RequestBody Category category);
 }
